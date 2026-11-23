@@ -26,8 +26,6 @@ void rotateRight(Node*& root, Node* x) {
 
     Node::rotations++;
 }
-
-
 void rotateLeft(Node*& root, Node* x) {
     if (x == nullptr || x->right == nullptr) return;
     Node* y = x->right;
@@ -48,4 +46,21 @@ void rotateLeft(Node*& root, Node* x) {
     x->parent = y;
 
     Node::rotations++;
+}
+
+
+void clear(Node*& root) {
+    if (root == nullptr) return;
+    clear(root->left);
+    clear(root->right);
+    delete root;
+    root = nullptr;
+}
+
+void printStats(Node* root) {
+    if (root == nullptr) {
+        std::cout << "Tree is empty." << std::endl;
+        return;
+    }
+    std::cout << "Total rotations: " << Node::rotations << std::endl;
 }
