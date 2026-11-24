@@ -1,8 +1,8 @@
 #include "splay_tree.h"
 #include <iostream>
 
-void section(const char* title) {
-    cout << "\n=== " << title << " ===\n";
+void section(const char* name) {
+    std::cout << "\n=== " << name << " ===\n";
 }
 
 int main() {
@@ -40,17 +40,19 @@ int main() {
     tree = insert(tree, 20);
     tree = insert(tree, 30);
     printStats(tree);
-    cout << "Root: " << tree->key << "\n";
+    std::cout << "Root: " << tree->key << "\n";
 
     // проверка поиска существующего ключа
     section("Find 10");
     tree = find(tree, 10);
-    cout << "Root after find: " << tree->key << "\n";
+    std::cout << "Root after find: " << tree->key << "\n";
+    std::cout << "Found: " << (tree->key == 10 ? "yes" : "no") << "\n";
     printStats(tree);
 
     // проверка поиска отсутствующего ключа
     section("Find missing 999");
     tree = find(tree, 999);
+    std::cout << "Found: " << (tree->key == 999 ? "yes" : "no") << "\n";
     printStats(tree);
 
     // проверка удаления существующего ключа
@@ -88,7 +90,7 @@ int main() {
     Node* sorted = nullptr;
     for (int i = 1; i <= 10; i++) sorted = insert(sorted, i);
     printStats(sorted);
-    cout << "Root: " << sorted->key << "\n";
+    std::cout << "Root: " << sorted->key << "\n";
     clear(sorted);
     
     return 0;
