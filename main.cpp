@@ -15,11 +15,11 @@ int main() {
     std::cout << "Before: root = " << root->key 
               << ", left = " << root->left->key << "\n";
 
-    rotateRight(root, root->left); // Поднимаем 5 наверх
+    rotateRight(root, root); // Поднимаем 5 наверх
 
-    std::cout << "After: root = " << root->key 
-              << ", right = " << root->right->key << "\n";
-    std::cout << "Rotations: " << Node::rotations << "\n";
+    std::cout << "After: root = " << root->key;
+    if (root->right != nullptr) std::cout << ", right = " << root->right->key;
+    std::cout << "\nRotations: " << Node::rotations << "\n";
 
     if (root->right->parent == root && root->right != nullptr) {
         std::cout << "Parent pointers OK.\n";
