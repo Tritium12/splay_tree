@@ -6,19 +6,19 @@ int main() {
     root->left = new Node(5);
     root->left->parent = root;
 
-    std::cout << "До поворота: корень = " << root->key 
-              << ", левый ребенок = " << root->left->key << "\n";
+    std::cout << "Before: root = " << root->key 
+              << ", left = " << root->left->key << "\n";
 
-    rotateRight(root, root); // Поднимаем 5 наверх
+    rotateRight(root, root->left); // Поднимаем 5 наверх
 
-    std::cout << "После поворота: корень = " << root->key 
-              << ", правый ребенок = " << root->right->key << "\n";
-    std::cout << "Количество поворотов: " << Node::rotations << "\n";
+    std::cout << "After: root = " << root->key 
+              << ", right = " << root->right->key << "\n";
+    std::cout << "Rotations: " << Node::rotations << "\n";
 
-    if (root->right->parent == root) {
-        std::cout << "Указатели parent корректны!\n";
+    if (root->right->parent == root && root->right != nullptr) {
+        std::cout << "Parent pointers OK.\n";
     } else {
-        std::cout << "ОШИБКА: Указатели parent сломаны!\n";
+        std::cout << "ERROR: parent pointers broken!\n";
     }
 
     clear(root);
