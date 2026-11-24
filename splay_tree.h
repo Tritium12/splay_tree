@@ -17,3 +17,6 @@ void rotateRight(Node*& root, Node* x);
 void rotateLeft(Node*& root, Node* x);
 void clear(Node*& root);
 void printStats(Node* root);
+Node* insert(Node* root, int key);
+Node* find(Node* root, int key);
+Node* remove(Node* root, int key);
