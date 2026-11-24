@@ -1,4 +1,5 @@
 #include "splay_tree.h"
+#include <climits>
 
 long long Node::rotations = 0;
 long long Node::splaySteps = 0;
@@ -57,11 +58,24 @@ void clear(Node*& root) {
     root = nullptr;
 }
 
+Node* lastVisited(Node* root, int key) {
+    Node* cur = root;
+    Node* last = nullptr;
+    while (cur != nullptr) {
+        last = cur;
+        if (key == cur->key) break;
+        if (key < cur->key) cur = cur->left;
+        else cur = cur->right;
+    }
+    return last;
+}
+
 // вставка
 Node* insert(Node* root, int key) {
     if (root==nullptr) return new Node(key);  // если пустое дерево
         
-    root = splay(root, key);            // ближайший узел - в корень
+    Node* last = lastVisited(root, key);
+    root = splay(root, last);            // ближайший узел - в корень
     if (root->key == key) return root;  // если дубликат - ничего не делаем
 
     Node* node = new Node(key);
@@ -84,7 +98,8 @@ Node* insert(Node* root, int key) {
 // поиск
 Node* find(Node* root, int key) {
     if (root==nullptr) return nullptr;  // если дерево пустое
-    root = splay(root, key);    // ближайший узел - в корень
+    Node* last = lastVisited(root, key);
+    root = splay(root, last);    // ближайший узел - в корень
     return (root->key == key) ? root : nullptr; // возвращаем указатель, если значение ровно key, иначе возвращаем nullptr
 }
 
@@ -92,7 +107,8 @@ Node* find(Node* root, int key) {
 Node* remove(Node* root, int key) {
     if (root==nullptr) return nullptr;  // если пустое дерево
 
-    root = splay(root, key);            // ближайший узел - в корень
+    Node* last = lastVisited(root, key);
+    root = splay(root, last);            // ближайший узел - в корень
     if (root->key != key) return root;  // такого key нет
 
     Node* leftSub  = root->left;    // запоминаем левое
@@ -106,7 +122,7 @@ Node* remove(Node* root, int key) {
 
     // Максимум левого поддерева - в корень. У него справа пусто, туда и прицепим rightSub.
     leftSub->parent = nullptr;
-    leftSub = splay(leftSub, INT_MAX);
+    leftSub = splay(leftSub, lastVisited(leftSub, INT_MAX)); // поднимаем максимум левого поддерева
     leftSub->right = rightSub;
     if (rightSub != nullptr) rightSub->parent = leftSub;
     return leftSub;
