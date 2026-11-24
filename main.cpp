@@ -1,6 +1,10 @@
 #include "splay_tree.h"
 #include <iostream>
 
+void section(const char* title) {
+    cout << "\n=== " << title << " ===\n";
+}
+
 int main() {
     // проверка поворота
     section("Rotation test");
