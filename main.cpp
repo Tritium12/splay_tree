@@ -52,7 +52,12 @@ int main() {
     // проверка поиска отсутствующего ключа
     section("Find missing 999");
     tree = find(tree, 999);
-    std::cout << "Found: " << (tree->key == 999 ? "yes" : "no") << "\n";
+    if (tree != nullptr) {
+        std::cout << "Root after find: " << tree->key << "\n";
+        std::cout << "Found: " << (tree->key == 999 ? "yes" : "no") << "\n";
+    } else {
+        std::cout << "Tree is empty\n";
+    }
     printStats(tree);
 
     // проверка удаления существующего ключа
