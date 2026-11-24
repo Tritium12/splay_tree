@@ -57,6 +57,52 @@ void clear(Node*& root) {
     root = nullptr;
 }
 
+// вставка
+Node* insert(Node* root, int key) {
+    if (root==nullptr) return new Node{key, nullptr, nullptr};  // если пустое дерево
+        
+    root = splay(root, key);            // ближайший узел - в корень
+    if (root->key == key) return root;  // если дубликат - ничего не делаем
+
+    Node* node = new Node{key, nullptr, nullptr};
+    if (key < root->key) {          // если новый узел левее корня
+        node->left  = root->left;   // его левое поддерево - старое левое
+        node->right = root;         // корень уходит вправо
+        root->left  = nullptr;      // обнуляем, иначе двойная ссылка
+    } else {                        // если новый узел правее корня
+        node->right = root->right;  // правое поддерево - старое правое
+        node->left  = root;         // корень уходит влево
+        root->right = nullptr;      // обнуляем, иначе двойная ссылка
+    }
+    return node;    // новый корень
+}
+
+// поиск
+Node* find(Node* root, int key) {
+    if (root==nullptr) return nullptr;  // если дерево пустое
+    root = splay(root, key);    // ближайший узел - в корень
+    return (root->key == key) ? root : nullptr; // возвращаем указатель, если значение ровно key, иначе возвращаем nullptr
+}
+
+// удаление
+Node* remove(Node* root, int key) {
+    if (root==nullptr) return nullptr;  // если пустое дерево
+
+    root = splay(root, key);            // ближайший узел - в корень
+    if (root->key != key) return root;  // такого key нет
+
+    Node* leftSub  = root->left;    // запоминаем левое
+    Node* rightSub = root->right;   // запоминаем правое
+    delete root;    // удаляем корень
+
+    if (leftSub==nullptr) return rightSub;  // если левого нет - возвращаем правое
+
+    // Максимум левого поддерева - в корень. У него справа пусто, туда и прицепим rightSub.
+    leftSub = splay(leftSub, INT_MAX);
+    leftSub->right = rightSub;
+    return leftSub;
+}
+
 void printStats(Node* root) {
     if (root == nullptr) {
         std::cout << "Tree is empty." << std::endl;
