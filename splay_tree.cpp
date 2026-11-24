@@ -1,9 +1,9 @@
 #include "splay_tree.h"
 
 long long Node::rotations = 0;
+long long Node::splaySteps = 0;
 
 Node::Node(int k) : key(k), left(nullptr), right(nullptr), parent(nullptr) {}
-
 
 void rotateRight(Node*& root, Node* x) {
     if (x == nullptr || x->left == nullptr) return;
@@ -26,6 +26,7 @@ void rotateRight(Node*& root, Node* x) {
 
     Node::rotations++;
 }
+
 void rotateLeft(Node*& root, Node* x) {
     if (x == nullptr || x->right == nullptr) return;
     Node* y = x->right;
@@ -48,7 +49,6 @@ void rotateLeft(Node*& root, Node* x) {
     Node::rotations++;
 }
 
-
 void clear(Node*& root) {
     if (root == nullptr) return;
     clear(root->left);
@@ -59,19 +59,23 @@ void clear(Node*& root) {
 
 // вставка
 Node* insert(Node* root, int key) {
-    if (root==nullptr) return new Node{key, nullptr, nullptr};  // если пустое дерево
+    if (root==nullptr) return new Node(key);  // если пустое дерево
         
     root = splay(root, key);            // ближайший узел - в корень
     if (root->key == key) return root;  // если дубликат - ничего не делаем
 
-    Node* node = new Node{key, nullptr, nullptr};
+    Node* node = new Node(key);
     if (key < root->key) {          // если новый узел левее корня
         node->left  = root->left;   // его левое поддерево - старое левое
+        if (node->left != nullptr) node->left->parent = node;
         node->right = root;         // корень уходит вправо
+        root->parent = node;
         root->left  = nullptr;      // обнуляем, иначе двойная ссылка
     } else {                        // если новый узел правее корня
         node->right = root->right;  // правое поддерево - старое правое
+        if (node->right != nullptr) node->right->parent = node;
         node->left  = root;         // корень уходит влево
+        root->parent = node;
         root->right = nullptr;      // обнуляем, иначе двойная ссылка
     }
     return node;    // новый корень
@@ -95,12 +99,29 @@ Node* remove(Node* root, int key) {
     Node* rightSub = root->right;   // запоминаем правое
     delete root;    // удаляем корень
 
-    if (leftSub==nullptr) return rightSub;  // если левого нет - возвращаем правое
+    if (leftSub==nullptr) {
+        if (rightSub != nullptr) rightSub->parent = nullptr;
+        return rightSub;  // если левого нет - возвращаем правое
+    }
 
     // Максимум левого поддерева - в корень. У него справа пусто, туда и прицепим rightSub.
+    leftSub->parent = nullptr;
     leftSub = splay(leftSub, INT_MAX);
     leftSub->right = rightSub;
+    if (rightSub != nullptr) rightSub->parent = leftSub;
     return leftSub;
+}
+
+int height(Node* root) {
+    if (root == nullptr) return 0;
+    int l = height(root->left);
+    int r = height(root->right);
+    return 1 + (l > r ? l : r);
+}
+
+int countNodes(Node* root) {
+    if (root == nullptr) return 0;
+    return 1 + countNodes(root->left) + countNodes(root->right);
 }
 
 void printStats(Node* root) {
@@ -108,35 +129,38 @@ void printStats(Node* root) {
         std::cout << "Tree is empty." << std::endl;
         return;
     }
+    std::cout << "Height: " << height(root) << "\n";
+    std::cout << "Nodes: " << countNodes(root) << "\n";
     std::cout << "Total rotations: " << Node::rotations << std::endl;
+    std::cout << "Total splay steps: " << Node::splaySteps << std::endl;
 }
 
 Node* splay(Node* root, Node* x) {
-    if (!x) return root;
-    while (x->parent) {
+    if (x == nullptr) return root;
+    while (x->parent != nullptr) {
         Node* p = x->parent;
         Node* g = p->parent;
         Node::splaySteps++;
 
-        if (!g) {
-            if (x == p->left) root = rotateRight(p);
-            else root = rotateLeft(p);
+        if (g == nullptr) { // Zig
+            if (x == p->left) rotateRight(root, p);
+            else rotateLeft(root, p);
         }
-        else if (x == p->left && p == g->left) {
-            root = rotateRight(g);
-            root = rotateRight(p);
+        else if (x == p->left && p == g->left) { // Zig-Zig
+            rotateRight(root, g);
+            rotateRight(root, p);
         }
-        else if (x == p->right && p == g->right) {
-            root = rotateLeft(g);
-            root = rotateLeft(p);
+        else if (x == p->right && p == g->right) { // Zig-Zig
+            rotateLeft(root, g);
+            rotateLeft(root, p);
         }
-        else if (x == p->right && p == g->left) {
-            root = rotateLeft(p);
-            root = rotateRight(g);
+        else if (x == p->right && p == g->left) { // Zig-Zag
+            rotateLeft(root, p);
+            rotateRight(root, g);
         }
-        else {
-            root = rotateRight(p);
-            root = rotateLeft(g);
+        else { // Zig-Zag
+            rotateRight(root, p);
+            rotateLeft(root, g);
         }
     }
     return x; // x теперь корень
