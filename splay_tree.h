@@ -20,6 +20,7 @@ void clear(Node*& root);
 void printStats(Node* root);
 int height(Node* root);
 int countNodes(Node* root);
+Node* lastVisited(Node* root, int key);
 Node* insert(Node* root, int key);
 Node* find(Node* root, int key);
 Node* remove(Node* root, int key);
