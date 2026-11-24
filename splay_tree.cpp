@@ -110,3 +110,34 @@ void printStats(Node* root) {
     }
     std::cout << "Total rotations: " << Node::rotations << std::endl;
 }
+
+Node* splay(Node* root, Node* x) {
+    if (!x) return root;
+    while (x->parent) {
+        Node* p = x->parent;
+        Node* g = p->parent;
+        Node::splaySteps++;
+
+        if (!g) {
+            if (x == p->left) root = rotateRight(p);
+            else root = rotateLeft(p);
+        }
+        else if (x == p->left && p == g->left) {
+            root = rotateRight(g);
+            root = rotateRight(p);
+        }
+        else if (x == p->right && p == g->right) {
+            root = rotateLeft(g);
+            root = rotateLeft(p);
+        }
+        else if (x == p->right && p == g->left) {
+            root = rotateLeft(p);
+            root = rotateRight(g);
+        }
+        else {
+            root = rotateRight(p);
+            root = rotateLeft(g);
+        }
+    }
+    return x; // x теперь корень
+}
