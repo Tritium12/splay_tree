@@ -20,3 +20,4 @@ void printStats(Node* root);
 Node* insert(Node* root, int key);
 Node* find(Node* root, int key);
 Node* remove(Node* root, int key);
+Node* splay(Node* root, Node* x)
