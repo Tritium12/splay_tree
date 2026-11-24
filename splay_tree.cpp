@@ -100,7 +100,6 @@ Node* find(Node* root, int key) {
     if (root==nullptr) return nullptr;  // если дерево пустое
     Node* last = lastVisited(root, key);
     root = splay(root, last);    // ближайший узел - в корень
-    return (root->key == key) ? root : nullptr; // возвращаем указатель, если значение ровно key, иначе возвращаем nullptr
 }
 
 // удаление
